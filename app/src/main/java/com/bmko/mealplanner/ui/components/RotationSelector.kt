@@ -3,7 +3,6 @@ package com.bmko.mealplanner.ui.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -23,8 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,10 +40,12 @@ fun RotationSelector(
     if (openAddRotationDialog.value) {
         AddRotationDialog(
             onAddRotation = { rotationName ->
-                onNewRotationAdded(rotationName)
                 textFieldState.setTextAndPlaceCursorAtEnd(rotationName)
+                onNewRotationAdded(rotationName)
                 // TODO: Handle duplicate names
+                // TODO: Handle updating to new rotation list correctly
                 openAddRotationDialog.value = false
+                expanded = false
             },
             onDismissRequest = {
                 openAddRotationDialog.value = false
@@ -60,17 +61,23 @@ fun RotationSelector(
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             shadowElevation = 4.dp
         ) {
+            // TODO: Look into better options
             OutlinedTextField(
                 modifier = Modifier
                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                    .wrapContentSize(Alignment.Center)
+                    .fillMaxWidth()
                     .padding(16.dp)
                     .statusBarsPadding(),
                 state = textFieldState,
                 readOnly = true,
                 lineLimits = TextFieldLineLimits.SingleLine,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
+                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 textStyle = MaterialTheme.typography.titleMedium,
             )
         }
@@ -96,8 +103,6 @@ fun RotationSelector(
             Button(
                 onClick = {
                     openAddRotationDialog.value = true
-                    // TODO: logic to switch to newly created rotation
-                    expanded = false
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -140,5 +145,16 @@ fun AddRotationDialog(
                 Text("Cancel")
             }
         }
+    )
+}
+
+@Preview
+@Composable
+fun RotationSelectorPreview() {
+    val options = listOf("Week 1", "Week 2", "Week 3")
+    RotationSelector(
+        options = options,
+        onRotationSelected = {},
+        onNewRotationAdded = {}
     )
 }

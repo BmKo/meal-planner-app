@@ -11,6 +11,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,14 +25,21 @@ import com.bmko.mealplanner.ui.theme.MealPlannerTheme
 @Composable
 fun MealListScreen() {
     val options = mutableListOf("Week 1", "Week 2")
-    var selectedIndex = 0
+    // TODO: Better method of tracking
+    var rotationSelectedIndex by remember { mutableStateOf(0) }
+    var meals by remember { mutableStateOf(getSampleMeals(week = 1)) }
+    var selectedMealsCount by remember { mutableStateOf(0) } // TODO: Better method of tracking
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             RotationSelector(
                 options = options,
-                onRotationSelected = { selectedIndex = options.indexOf(it) },
+                onRotationSelected = {
+                    rotationSelectedIndex = options.indexOf(it)
+                    meals = getSampleMeals(week = rotationSelectedIndex + 1)
+                    selectedMealsCount = 0 // TODO: Update to new count when state is preserved
+                },
                 onNewRotationAdded = { option -> options.add(option) })
         }) { innerPadding ->
         Column(
@@ -37,18 +48,23 @@ fun MealListScreen() {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val meals = getSampleMeals(week = selectedIndex + 1)
+
 
             GenerateShoppingListButton({ /* TODO: Make functional */ })
-            MealsHeader(selectedCount = 0, totalCount = meals.size, onAddMeal = {})
+            MealsHeader(selectedCount = selectedMealsCount, totalCount = meals.size, onAddMeal = {})
             LazyColumn {
                 items(meals.size) { index ->
                     val meal = meals[index]
                     MealCard(
                         mealName = meal.name,
                         mealImage = meal.imageResId,
-                        isSelected = false,
-                        onSelectionChange = { /* TODO: Handle selection change */ }
+                        isSelected = meals[index].isMarkedDone,
+                        onSelectionChange = {
+                            meals = meals.toMutableList().apply {
+                                this[index] = this[index].copy(isMarkedDone = it)
+                            }
+                            selectedMealsCount += if (it) 1 else -1
+                        }
                     )
                 }
             }

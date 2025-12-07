@@ -49,9 +49,18 @@ fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionC
                 modifier = Modifier.padding(16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = mealName, style = MaterialTheme.typography.bodyLarge
-                    )
+                    if (isSelected) {
+                        Text(
+                            text = mealName,
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            )
+                        )
+                    } else {
+                        Text(
+                            text = mealName, style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -87,11 +96,22 @@ fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionC
 
 @Preview
 @Composable
-fun MealCardPreview() {
+fun MealCardNotSelectedPreview() {
     MealCard(
         mealName = "Spicy Penne Pasta",
         mealImage = com.bmko.mealplanner.R.drawable.placeholder_meal_image,
         isSelected = false,
+        onSelectionChange = {}
+    )
+}
+
+@Preview
+@Composable
+fun MealCardSelectedPreview() {
+    MealCard(
+        mealName = "Spicy Penne Pasta",
+        mealImage = com.bmko.mealplanner.R.drawable.placeholder_meal_image,
+        isSelected = true,
         onSelectionChange = {}
     )
 }
