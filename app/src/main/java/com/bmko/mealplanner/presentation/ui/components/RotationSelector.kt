@@ -1,11 +1,8 @@
-package com.bmko.mealplanner.ui.components
+package com.bmko.mealplanner.presentation.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -29,21 +26,19 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RotationSelector(
-    options: List<String>,
+    rotations: List<String>,
+    selectedRotation: String?,
     onRotationSelected: (String) -> Unit,
     onNewRotationAdded: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val textFieldState = rememberTextFieldState(options[0])
     val openAddRotationDialog = remember { mutableStateOf(false) }
 
     if (openAddRotationDialog.value) {
         AddRotationDialog(
             onAddRotation = { rotationName ->
-                textFieldState.setTextAndPlaceCursorAtEnd(rotationName)
                 onNewRotationAdded(rotationName)
-                // TODO: Handle duplicate names
-                // TODO: Handle updating to new rotation list correctly
+                onRotationSelected(rotationName) // TODO: Handle selection better, should include error handling
                 openAddRotationDialog.value = false
                 expanded = false
             },
@@ -68,9 +63,9 @@ fun RotationSelector(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .statusBarsPadding(),
-                state = textFieldState,
+                value = selectedRotation ?: "Select a Rotation",
+                onValueChange = {},
                 readOnly = true,
-                lineLimits = TextFieldLineLimits.SingleLine,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
                     focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -87,13 +82,11 @@ fun RotationSelector(
             onDismissRequest = { expanded = false },
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            options.forEachIndexed { index, option ->
+            rotations.forEach { rotation ->
                 DropdownMenuItem(
-
-                    text = { Text(option, style = MaterialTheme.typography.bodyLarge) },
+                    text = { Text(rotation, style = MaterialTheme.typography.bodyLarge) },
                     onClick = {
-                        textFieldState.setTextAndPlaceCursorAtEnd(option)
-                        onRotationSelected(option)
+                        onRotationSelected(rotation)
                         expanded = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -153,7 +146,8 @@ fun AddRotationDialog(
 fun RotationSelectorPreview() {
     val options = listOf("Week 1", "Week 2", "Week 3")
     RotationSelector(
-        options = options,
+        rotations = options,
+        selectedRotation = options[0],
         onRotationSelected = {},
         onNewRotationAdded = {}
     )

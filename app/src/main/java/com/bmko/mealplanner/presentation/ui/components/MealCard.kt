@@ -1,4 +1,4 @@
-package com.bmko.mealplanner.ui.components
+package com.bmko.mealplanner.presentation.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -8,19 +8,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bmko.mealplanner.R
 
 @Composable
 fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionChange: (Boolean) -> Unit) {
@@ -37,13 +46,21 @@ fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionC
     ) {
         Column {
             Image(
-                painter = painterResource(id = mealImage),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                painter = painterResource(id = mealImage),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                colorFilter = if (isSelected) {
+                    ColorFilter.tint(
+                        color = Color.LightGray,
+                        blendMode = BlendMode.Multiply
+                    )
+                } else {
+                    null
+                }
             )
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -53,7 +70,7 @@ fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionC
                         Text(
                             text = mealName,
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                                textDecoration = TextDecoration.LineThrough
                             )
                         )
                     } else {
@@ -64,30 +81,21 @@ fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionC
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    Checkbox(
-                        checked = isSelected,
-                        onCheckedChange = onSelectionChange
+                    Row {
+                        Checkbox(
+                            checked = isSelected,
+                            onCheckedChange = onSelectionChange
+                        )
 
-                    )
-
-                    // TODO: Make stylized version of checkbox
-//                    IconButton(
-//                        onClick = { onSelectionChange(!isSelected) },
-//                        modifier = Modifier.size(24.dp)
-//                    ) {
-//                        if (isSelected) {
-//                            // Placeholder for checked state
-//                            Icon(
-//                                imageVector = Icons.Default.RadioButtonChecked,
-//                                contentDescription = "Marked as done"
-//                            )
-//                        } else {
-//                            Icon(
-//                                imageVector = Icons.Default.RadioButtonUnchecked,
-//                                contentDescription = "Mark as done"
-//                            )
-//                        }
-//                    }
+                        IconButton(
+                            onClick = { /* TODO: Add menu actions */ }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options"
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -99,7 +107,7 @@ fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionC
 fun MealCardNotSelectedPreview() {
     MealCard(
         mealName = "Spicy Penne Pasta",
-        mealImage = com.bmko.mealplanner.R.drawable.placeholder_meal_image,
+        mealImage = R.drawable.placeholder_meal_image,
         isSelected = false,
         onSelectionChange = {}
     )
@@ -110,7 +118,7 @@ fun MealCardNotSelectedPreview() {
 fun MealCardSelectedPreview() {
     MealCard(
         mealName = "Spicy Penne Pasta",
-        mealImage = com.bmko.mealplanner.R.drawable.placeholder_meal_image,
+        mealImage = R.drawable.placeholder_meal_image,
         isSelected = true,
         onSelectionChange = {}
     )

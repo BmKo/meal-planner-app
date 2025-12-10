@@ -1,4 +1,4 @@
-package com.bmko.mealplanner.ui.theme
+package com.bmko.mealplanner.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
