@@ -18,6 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.bmko.mealplanner.domain.models.Meal
+import com.bmko.mealplanner.presentation.MealPlannerAction
+import com.bmko.mealplanner.presentation.MealPlannerState
 import com.bmko.mealplanner.presentation.MealPlannerViewModel
 import com.bmko.mealplanner.presentation.ui.theme.MealPlannerTheme
 
@@ -26,44 +28,27 @@ fun MealListScreenRoot(
     viewModel: MealPlannerViewModel = hiltViewModel()
 ) {
     MealListScreen(
-        meals = viewModel.state.meals,
-        getMeals = { rotation ->
-            viewModel.getMeals(rotation)
-        },
-        selectedRotation = viewModel.state.selectedRotation,
-        rotations = viewModel.state.rotations,
-        addRotation = { rotation ->
-            viewModel.addRotation(rotation)
-        },
-        selectRotation = { rotation ->
-            viewModel.selectRotation(rotation)
-        },
-        updateMealDoneStatus = { mealId, isDone ->
-            viewModel.updateMealDoneStatus(mealId, isDone)
-        }
+        state = viewModel.state,
+        actions = viewModel::onAction
     )
 }
 
 @Composable
 fun MealListScreen(
-    meals: List<Meal>,
-    getMeals: (String) -> Unit,
-    selectedRotation: String?,
-    rotations: List<String>,
-    addRotation: (String) -> Unit,
-    selectRotation: (String) -> Unit,
-    updateMealDoneStatus: (Int, Boolean) -> Unit
+    state: MealPlannerState,
+    actions: (MealPlannerAction) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(), topBar = {
             RotationSelector(
-                rotations = rotations,
-                selectedRotation = selectedRotation,
+                rotations = state.rotations,
+                selectedRotation = state.selectedRotation,
                 onRotationSelected = { rotation ->
-                    selectRotation(rotation)
-                    getMeals(rotation)
+                    actions(MealPlannerAction.SelectRotation(rotation))
+                    actions(MealPlannerAction.GetMeals(rotation))
                 },
-                onNewRotationAdded = { rotation -> addRotation(rotation) })
+                onNewRotationAdded = { rotation -> actions(MealPlannerAction.AddRotation(rotation)) }
+            )
         }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -75,18 +60,18 @@ fun MealListScreen(
 
             GenerateShoppingListButton({ /* TODO: Make functional */ })
             MealsHeader(
-                selectedCount = meals.sumOf { if (it.isMarkedDone) 1 else 0 },
-                totalCount = meals.size,
-                onAddMeal = {/* TODO: Make functional */}
+                selectedCount = state.meals.sumOf { if (it.isMarkedDone) 1 else 0 },
+                totalCount = state.meals.size,
+                onAddMeal = {/* TODO: Make functional */ }
             )
             LazyColumn {
-                items(meals) { meal ->
+                items(state.meals) { meal ->
                     MealCard(
                         mealName = meal.name,
                         mealImage = meal.imageResId,
                         isSelected = meal.isMarkedDone,
                         onSelectionChange = { selection ->
-                            updateMealDoneStatus(meal.id, selection)
+                            actions(MealPlannerAction.UpdateMealDoneStatus(meal.id, selection))
                         })
                 }
             }
@@ -113,19 +98,20 @@ private fun GenerateShoppingListButton(onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun MealListScreenPreview() {
+    val state = MealPlannerState(
+        meals = listOf(
+            Meal(1, "Spicy Penne Pasta", com.bmko.mealplanner.R.drawable.sample_meal_image),
+            Meal(2, "Grilled Chicken Salad", isMarkedDone = true),
+            Meal(3, "Vegetable Stir Fry")
+        ),
+        selectedRotation = "Week 1",
+        rotations = listOf("Week 1", "Week 2")
+    )
+
     MealPlannerTheme {
         MealListScreen(
-            meals = listOf(
-                Meal(1, "Spicy Penne Pasta", com.bmko.mealplanner.R.drawable.sample_meal_image),
-                Meal(2, "Grilled Chicken Salad", isMarkedDone = true),
-                Meal(3, "Vegetable Stir Fry")
-            ),
-            getMeals = {},
-            selectedRotation = "Week 1",
-            rotations = listOf("Week 1", "Week 2"),
-            addRotation = {},
-            selectRotation = {},
-            updateMealDoneStatus = { _, _ -> }
+            state = state,
+            actions = {}
         )
     }
 }

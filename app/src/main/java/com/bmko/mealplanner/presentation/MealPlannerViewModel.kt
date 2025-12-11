@@ -23,7 +23,20 @@ class MealPlannerViewModel @Inject constructor(
         getRotations()
     }
 
-    fun getMeals(rotation: String) {
+    fun onAction(action: MealPlannerAction) {
+        when (action) {
+            is MealPlannerAction.GetMeals -> getMeals(action.rotation)
+            is MealPlannerAction.GetRotations -> getRotations()
+            is MealPlannerAction.AddRotation -> addRotation(action.rotation)
+            is MealPlannerAction.SelectRotation -> selectRotation(action.rotation)
+            is MealPlannerAction.UpdateMealDoneStatus -> updateMealDoneStatus(
+                action.mealId,
+                action.isDone
+            )
+        }
+    }
+
+    private fun getMeals(rotation: String) {
         viewModelScope.launch {
             state = state.copy(
                 isLoading = true,
@@ -49,7 +62,7 @@ class MealPlannerViewModel @Inject constructor(
         }
     }
 
-    fun getRotations() {
+    private fun getRotations() {
         viewModelScope.launch {
             state = state.copy(
                 isLoading = true,
@@ -75,7 +88,7 @@ class MealPlannerViewModel @Inject constructor(
         }
     }
 
-    fun addRotation(rotation: String) {
+    private fun addRotation(rotation: String) {
         viewModelScope.launch {
             // TODO: Replace with repository call to persist
             // TODO: Add error handling for duplicates
@@ -86,13 +99,13 @@ class MealPlannerViewModel @Inject constructor(
         }
     }
 
-    fun selectRotation(rotation: String) {
+    private fun selectRotation(rotation: String) {
         state = state.copy(
             selectedRotation = rotation
         )
     }
 
-    fun updateMealDoneStatus(mealId: Int, isDone: Boolean) {
+    private fun updateMealDoneStatus(mealId: Int, isDone: Boolean) {
         viewModelScope.launch {
             // TODO: Replace with repository call to persist
             val updatedMeals = state.meals.map { meal ->
