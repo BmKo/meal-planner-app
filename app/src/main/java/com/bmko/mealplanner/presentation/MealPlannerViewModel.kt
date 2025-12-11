@@ -19,6 +19,10 @@ class MealPlannerViewModel @Inject constructor(
     var state by mutableStateOf(MealPlannerState())
         private set
 
+    init {
+        getRotations()
+    }
+
     fun getMeals(rotation: String) {
         viewModelScope.launch {
             state = state.copy(
@@ -37,6 +41,32 @@ class MealPlannerViewModel @Inject constructor(
                 is Resource.Error -> {
                     state = state.copy(
                         meals = emptyList(),
+                        isLoading = false,
+                        error = result.message
+                    )
+                }
+            }
+        }
+    }
+
+    fun getRotations() {
+        viewModelScope.launch {
+            state = state.copy(
+                isLoading = true,
+                error = null
+            )
+            when (val result = repository.getRotations()) {
+                is Resource.Success -> {
+                    state = state.copy(
+                        rotations = result.data ?: emptyList(),
+                        isLoading = false,
+                        error = null
+                    )
+                }
+
+                is Resource.Error -> {
+                    state = state.copy(
+                        rotations = emptyList(),
                         isLoading = false,
                         error = result.message
                     )

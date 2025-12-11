@@ -18,6 +18,25 @@ class MealPlannerRepositoryImpl @Inject constructor() : MealPlannerRepository {
         }
     }
 
+    override suspend fun getRotations(): Resource<List<String>> {
+        return try {
+            // TODO: Replace with real data source
+            Resource.Success(
+                getSampleRotations()
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.message ?: "An unknown error occurred")
+        }
+    }
+
+    private fun getSampleRotations(): List<String> {
+        return listOf(
+            "Week 1",
+            "Week 2"
+        )
+    }
+
     private fun getSampleMeals(rotation: String): List<Meal> {
         return when (rotation) {
             "Week 1" -> listOf(
