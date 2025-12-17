@@ -1,5 +1,6 @@
 package com.bmko.mealplanner.presentation.ui.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,10 +46,7 @@ fun MealListScreen(
             RotationSelector(
                 rotations = state.rotations,
                 selectedRotation = state.selectedRotation,
-                onRotationSelected = { rotation ->
-                    actions(MealPlannerAction.SelectRotation(rotation))
-                    actions(MealPlannerAction.GetMeals(rotation.id))
-                },
+                onRotationSelected = { rotation -> actions(MealPlannerAction.SelectRotation(rotation)) },
                 onNewRotationAdded = { rotation -> actions(MealPlannerAction.AddRotation(rotation)) }
             )
         }) { innerPadding ->
@@ -57,7 +56,12 @@ fun MealListScreen(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
+            if (state.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+                return@Column
+            }
 
             GenerateShoppingListButton({ /* TODO: Make functional */ })
             MealsHeader(

@@ -37,13 +37,13 @@ class MealPlannerViewModel @Inject constructor(
         }
     }
 
-    private fun getMeals(rotation: String) {
+    private fun getMeals(rotationId: String) {
         viewModelScope.launch {
             state = state.copy(
                 isLoading = true,
                 error = null
             )
-            when (val result = repository.getMealsForRotation(rotation)) {
+            when (val result = repository.getMealsForRotation(rotationId)) {
                 is Resource.Success -> {
                     state = state.copy(
                         meals = result.data ?: emptyList(),
@@ -91,15 +91,18 @@ class MealPlannerViewModel @Inject constructor(
 
     private fun addRotation(rotationName: String) {
         viewModelScope.launch {
-            // TODO: Replace with repository call to persist
-            // TODO: Add error handling for duplicates
-            val updatedRotations = state.rotations + Rotation(
-                rotationName,
-                rotationName
-            )
-            state = state.copy(
-                rotations = updatedRotations
-            )
+            val result = repository.addRotation(rotationName)
+
+            if (result is Resource.Success) {
+                val newRotation = result.data!!
+                val updatedRotations = state.rotations + newRotation
+                state = state.copy(
+                    rotations = updatedRotations
+                )
+                selectRotation(newRotation)
+            }
+
+            // TODO: Handle errors
         }
     }
 
@@ -107,14 +110,17 @@ class MealPlannerViewModel @Inject constructor(
         state = state.copy(
             selectedRotation = rotation
         )
+        getMeals(rotation.id)
     }
 
     private fun updateMealDoneStatus(mealId: String, isDone: Boolean) {
         viewModelScope.launch {
-            // TODO: Replace with repository call to persist
+            val result = repository.markMealDone(mealId = mealId, isDone = isDone)
+
+            // TODO: Handle errors
             val updatedMeals = state.meals.map { meal ->
-                if (meal.id == mealId) {
-                    meal.copy(isMarkedDone = isDone)
+                if (meal.id == mealId && result is Resource.Success) {
+                    result.data!!
                 } else {
                     meal
                 }
