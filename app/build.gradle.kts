@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,6 +22,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").reader())
+        buildConfigField("String", "APPWRITE_ENDPOINT", "\"${properties.getProperty("APPWRITE_ENDPOINT")}\"")
+        buildConfigField("String", "APPWRITE_PROJECT_ID", "\"${properties.getProperty("APPWRITE_PROJECT_ID")}\"")
+        buildConfigField("String", "DATABASE_ID", "\"${properties.getProperty("DATABASE_ID")}\"")
+        buildConfigField("String", "MEALS_TABLE_ID", "\"${properties.getProperty("MEALS_TABLE_ID")}\"")
+        buildConfigField("String", "ROTATIONS_TABLE_ID", "\"${properties.getProperty("ROTATIONS_TABLE_ID")}\"")
+        buildConfigField("String", "PLANS_TABLE_ID", "\"${properties.getProperty("PLANS_TABLE_ID")}\"")
+        buildConfigField("String", "INGREDIENTS_TABLE_ID", "\"${properties.getProperty("INGREDIENTS_TABLE_ID")}\"")
+        // TODO: Remove when plans implemented
+        buildConfigField("String", "PLAN_ID", "\"${properties.getProperty("PLAN_ID")}\"")
     }
 
     buildTypes {
@@ -39,6 +53,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -62,14 +77,13 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-
     // Hilt / Dagger
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+
+    // Appwrite
+    implementation(libs.appwrite)
 }

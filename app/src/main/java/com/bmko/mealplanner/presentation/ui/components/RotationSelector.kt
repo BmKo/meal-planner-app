@@ -22,13 +22,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bmko.mealplanner.domain.models.Rotation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RotationSelector(
-    rotations: List<String>,
-    selectedRotation: String?,
-    onRotationSelected: (String) -> Unit,
+    rotations: List<Rotation>,
+    selectedRotation: Rotation?,
+    onRotationSelected: (Rotation) -> Unit,
     onNewRotationAdded: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -38,7 +39,6 @@ fun RotationSelector(
         AddRotationDialog(
             onAddRotation = { rotationName ->
                 onNewRotationAdded(rotationName)
-                onRotationSelected(rotationName) // TODO: Handle selection better, should include error handling
                 openAddRotationDialog.value = false
                 expanded = false
             },
@@ -63,7 +63,7 @@ fun RotationSelector(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .statusBarsPadding(),
-                value = selectedRotation ?: "Select a Rotation",
+                value = selectedRotation?.name ?: "Select a Rotation",
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -84,7 +84,7 @@ fun RotationSelector(
         ) {
             rotations.forEach { rotation ->
                 DropdownMenuItem(
-                    text = { Text(rotation, style = MaterialTheme.typography.bodyLarge) },
+                    text = { Text(rotation.name, style = MaterialTheme.typography.bodyLarge) },
                     onClick = {
                         onRotationSelected(rotation)
                         expanded = false
@@ -144,7 +144,7 @@ fun AddRotationDialog(
 @Preview
 @Composable
 fun RotationSelectorPreview() {
-    val options = listOf("Week 1", "Week 2", "Week 3")
+    val options = listOf(Rotation("1", "Week 1"), Rotation("2", "Week 2"), Rotation("3", "Week 3"))
     RotationSelector(
         rotations = options,
         selectedRotation = options[0],

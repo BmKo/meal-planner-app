@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.1"
+agp = "8.13.2"
 kotlin = "2.2.21"
 coreKtx = "1.17.0"
 junit = "4.13.2"
@@ -37,6 +37,7 @@ dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", versi
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+appwrite = { module = "io.appwrite:sdk-for-android", version = "11.4.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

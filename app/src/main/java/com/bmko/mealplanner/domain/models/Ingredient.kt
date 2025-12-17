@@ -1,8 +1,8 @@
 package com.bmko.mealplanner.domain.models
 
 data class Ingredient(
-    val id: Int,
+    val id: String,
     val name: String,
-    val quantity: String, // TODO: Improve representation of quantity
+    val quantity: String,
     val isAcquired: Boolean = false
 )

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bmko.mealplanner.domain.models.Rotation
 import com.bmko.mealplanner.domain.repository.MealPlannerRepository
 import com.bmko.mealplanner.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,9 +26,9 @@ class MealPlannerViewModel @Inject constructor(
 
     fun onAction(action: MealPlannerAction) {
         when (action) {
-            is MealPlannerAction.GetMeals -> getMeals(action.rotation)
+            is MealPlannerAction.GetMeals -> getMeals(action.rotationId)
             is MealPlannerAction.GetRotations -> getRotations()
-            is MealPlannerAction.AddRotation -> addRotation(action.rotation)
+            is MealPlannerAction.AddRotation -> addRotation(action.rotationName)
             is MealPlannerAction.SelectRotation -> selectRotation(action.rotation)
             is MealPlannerAction.UpdateMealDoneStatus -> updateMealDoneStatus(
                 action.mealId,
@@ -88,24 +89,27 @@ class MealPlannerViewModel @Inject constructor(
         }
     }
 
-    private fun addRotation(rotation: String) {
+    private fun addRotation(rotationName: String) {
         viewModelScope.launch {
             // TODO: Replace with repository call to persist
             // TODO: Add error handling for duplicates
-            val updatedRotations = state.rotations + rotation
+            val updatedRotations = state.rotations + Rotation(
+                rotationName,
+                rotationName
+            )
             state = state.copy(
                 rotations = updatedRotations
             )
         }
     }
 
-    private fun selectRotation(rotation: String) {
+    private fun selectRotation(rotation: Rotation) {
         state = state.copy(
             selectedRotation = rotation
         )
     }
 
-    private fun updateMealDoneStatus(mealId: Int, isDone: Boolean) {
+    private fun updateMealDoneStatus(mealId: String, isDone: Boolean) {
         viewModelScope.launch {
             // TODO: Replace with repository call to persist
             val updatedMeals = state.meals.map { meal ->

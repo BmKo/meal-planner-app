@@ -3,9 +3,8 @@ package com.bmko.mealplanner.domain.models
 import com.bmko.mealplanner.R
 
 data class Meal(
-    val id: Int,
+    val id: String,
     val name: String,
     val imageResId: Int = R.drawable.placeholder_meal_image,
-    val isMarkedDone: Boolean = false,
-    val ingredients: List<Ingredient> = emptyList()
+    val isMarkedDone: Boolean = false
 )
