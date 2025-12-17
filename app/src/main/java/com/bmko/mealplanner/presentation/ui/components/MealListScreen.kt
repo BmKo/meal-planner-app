@@ -67,7 +67,7 @@ fun MealListScreen(
             MealsHeader(
                 selectedCount = state.meals.sumOf { if (it.isMarkedDone) 1 else 0 },
                 totalCount = state.meals.size,
-                onAddMeal = {/* TODO: Make functional */ }
+                onAddMeal = { mealName -> actions(MealPlannerAction.AddMeal(mealName)) }
             )
             LazyColumn {
                 items(state.meals) { meal ->

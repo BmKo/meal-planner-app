@@ -34,6 +34,7 @@ class MealPlannerViewModel @Inject constructor(
                 action.mealId,
                 action.isDone
             )
+            is MealPlannerAction.AddMeal -> addMeal(action.mealName)
         }
     }
 
@@ -129,6 +130,26 @@ class MealPlannerViewModel @Inject constructor(
             state = state.copy(
                 meals = updatedMeals
             )
+        }
+    }
+
+    private fun addMeal(mealName: String) {
+        // TODO: Proper error handling for no selected rotation
+        viewModelScope.launch {
+            val result = repository.addMeal(
+                rotationId = state.selectedRotation?.id ?: return@launch,
+                mealName = mealName
+            )
+
+            if (result is Resource.Success) {
+                val newMeal = result.data!!
+                val updatedMeals = state.meals + newMeal
+                state = state.copy(
+                    meals = updatedMeals
+                )
+            }
+
+            // TODO: Handle errors
         }
     }
 }

@@ -67,4 +67,14 @@ class MealPlannerRepositoryImpl @Inject constructor(private val api: MealPlanner
             Resource.Error(e.message ?: "An unknown error occurred")
         }
     }
+
+    override suspend fun addMeal(rotationId: String, mealName: String): Resource<Meal> {
+        return try {
+            val response = api.createMeal(rotationId, mealName)
+            Resource.Success(response.toMeal())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.message ?: "An unknown error occurred")
+        }
+    }
 }

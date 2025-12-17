@@ -3,7 +3,6 @@ package com.bmko.mealplanner.presentation.ui.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,8 +35,10 @@ fun RotationSelector(
     val openAddRotationDialog = remember { mutableStateOf(false) }
 
     if (openAddRotationDialog.value) {
-        AddRotationDialog(
-            onAddRotation = { rotationName ->
+        AddItemDialog(
+            title = "Add New Rotation",
+            label = "Rotation Name",
+            onAdd = { rotationName ->
                 onNewRotationAdded(rotationName)
                 openAddRotationDialog.value = false
                 expanded = false
@@ -105,40 +106,6 @@ fun RotationSelector(
             }
         }
     }
-}
-
-@Composable
-fun AddRotationDialog(
-    onAddRotation: (String) -> Unit,
-    onDismissRequest: () -> Unit
-) {
-    val rotationName = remember { mutableStateOf("") }
-
-    AlertDialog(
-        title = { Text("Add New Rotation") },
-        text = {
-            OutlinedTextField(
-                value = rotationName.value,
-                onValueChange = { rotationName.value = it },
-                label = { Text("Rotation Name") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            Button(onClick = {
-                onAddRotation(rotationName.value)
-            }) {
-                Text("Add")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismissRequest) {
-                Text("Cancel")
-            }
-        }
-    )
 }
 
 @Preview
