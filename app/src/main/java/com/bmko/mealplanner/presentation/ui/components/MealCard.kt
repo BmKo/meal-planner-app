@@ -1,6 +1,7 @@
 package com.bmko.mealplanner.presentation.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,11 +14,17 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +39,47 @@ import androidx.compose.ui.unit.dp
 import com.bmko.mealplanner.R
 
 @Composable
-fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionChange: (Boolean) -> Unit) {
+fun MealCard(
+    mealName: String,
+    mealImage: Int,
+    isSelected: Boolean,
+    onSelectionChange: (Boolean) -> Unit,
+    onRenameMeal: (String) -> Unit,
+    onDeleteMeal: () -> Unit
+) {
+    val openRenameMealDialog = remember { mutableStateOf(false) }
+    val openDeleteMealDialog = remember { mutableStateOf(false) }
+
+    if (openRenameMealDialog.value) {
+        TextInputDialog(
+            title = "Rename Meal",
+            label = "Meal Name",
+            buttonLabel = "Rename",
+            startingText = mealName,
+            onConfirm = { newName ->
+                onRenameMeal(newName)
+                openRenameMealDialog.value = false
+            },
+            onDismissRequest = {
+                openRenameMealDialog.value = false
+            }
+        )
+    }
+
+    if (openDeleteMealDialog.value) {
+        ConfirmationDialog(
+            title = "Delete Meal",
+            confirmationMessage = "Are you sure you want to delete this meal?",
+            onConfirm = {
+                onDeleteMeal()
+                openDeleteMealDialog.value = false
+            },
+            onDismissRequest = {
+                openDeleteMealDialog.value = false
+            }
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,18 +133,48 @@ fun MealCard(mealName: String, mealImage: Int, isSelected: Boolean, onSelectionC
                             checked = isSelected,
                             onCheckedChange = onSelectionChange
                         )
-
-                        IconButton(
-                            onClick = { /* TODO: Add menu actions */ }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More options"
-                            )
-                        }
+                        MealMoreMenu(
+                            onRenameClicked = { openRenameMealDialog.value = true },
+                            onDeleteClicked = { openDeleteMealDialog.value = true })
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun MealMoreMenu(onRenameClicked: () -> Unit, onDeleteClicked: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        IconButton(
+            onClick = { expanded = true }
+        ) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "More options"
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Rename") },
+                onClick = {
+                    onRenameClicked()
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Delete") },
+                onClick = {
+                    onDeleteClicked()
+                    expanded = false
+                }
+            )
         }
     }
 }
@@ -109,7 +186,9 @@ fun MealCardNotSelectedPreview() {
         mealName = "Spicy Penne Pasta",
         mealImage = R.drawable.placeholder_meal_image,
         isSelected = false,
-        onSelectionChange = {}
+        onSelectionChange = {},
+        onRenameMeal = {},
+        onDeleteMeal = {}
     )
 }
 
@@ -120,6 +199,8 @@ fun MealCardSelectedPreview() {
         mealName = "Spicy Penne Pasta",
         mealImage = R.drawable.placeholder_meal_image,
         isSelected = true,
-        onSelectionChange = {}
+        onSelectionChange = {},
+        onRenameMeal = {},
+        onDeleteMeal = {}
     )
 }

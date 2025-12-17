@@ -30,11 +30,10 @@ class MealPlannerViewModel @Inject constructor(
             is MealPlannerAction.GetRotations -> getRotations()
             is MealPlannerAction.AddRotation -> addRotation(action.rotationName)
             is MealPlannerAction.SelectRotation -> selectRotation(action.rotation)
-            is MealPlannerAction.UpdateMealDoneStatus -> updateMealDoneStatus(
-                action.mealId,
-                action.isDone
-            )
+            is MealPlannerAction.UpdateMealDoneStatus -> updateMealDoneStatus(action.mealId, action.isDone)
             is MealPlannerAction.AddMeal -> addMeal(action.mealName)
+            is MealPlannerAction.DeleteMeal -> deleteMeal(action.mealId)
+            is MealPlannerAction.RenameMeal -> renameMeal(action.mealId, action.newName)
         }
     }
 
@@ -144,6 +143,43 @@ class MealPlannerViewModel @Inject constructor(
             if (result is Resource.Success) {
                 val newMeal = result.data!!
                 val updatedMeals = state.meals + newMeal
+                state = state.copy(
+                    meals = updatedMeals
+                )
+            }
+
+            // TODO: Handle errors
+        }
+    }
+
+    private fun deleteMeal(mealId: String) {
+        viewModelScope.launch {
+            val result = repository.deleteMeal(mealId)
+
+            if (result is Resource.Success) {
+                val updatedMeals = state.meals.filter { it.id != mealId }
+                state = state.copy(
+                    meals = updatedMeals
+                )
+            }
+
+            // TODO: Handle errors
+        }
+    }
+
+    private fun renameMeal(mealId: String, newName: String) {
+        viewModelScope.launch {
+            val result = repository.renameMeal(mealId, newName)
+
+            if (result is Resource.Success) {
+                val updatedMeal = result.data!!
+                val updatedMeals = state.meals.map { meal ->
+                    if (meal.id == mealId) {
+                        updatedMeal
+                    } else {
+                        meal
+                    }
+                }
                 state = state.copy(
                     meals = updatedMeals
                 )

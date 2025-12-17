@@ -24,10 +24,11 @@ fun MealsHeader(selectedCount: Int, totalCount: Int, onAddMeal: (String) -> Unit
     val openAddMealDialog = remember { mutableStateOf(false) }
 
     if (openAddMealDialog.value) {
-        AddItemDialog(
+        TextInputDialog(
             title = "Add New Meal",
             label = "Meal Name",
-            onAdd = { mealName ->
+            buttonLabel = "Add",
+            onConfirm = { mealName ->
                 onAddMeal(mealName)
                 openAddMealDialog.value = false
             },

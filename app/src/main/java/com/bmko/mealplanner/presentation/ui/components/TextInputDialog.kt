@@ -11,13 +11,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
 @Composable
-fun AddItemDialog(
+fun TextInputDialog(
     title: String,
     label: String,
-    onAdd: (String) -> Unit,
+    buttonLabel: String,
+    startingText: String = "",
+    onConfirm: (String) -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    val input = remember { mutableStateOf("") }
+    val input = remember { mutableStateOf(startingText) }
 
     AlertDialog(
         title = { Text(title) },
@@ -33,9 +35,9 @@ fun AddItemDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
             Button(onClick = {
-                onAdd(input.value)
+                onConfirm(input.value)
             }) {
-                Text("Add")
+                Text(buttonLabel)
             }
         },
         dismissButton = {

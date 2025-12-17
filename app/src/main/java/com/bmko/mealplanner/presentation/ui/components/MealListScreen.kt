@@ -77,7 +77,14 @@ fun MealListScreen(
                         isSelected = meal.isMarkedDone,
                         onSelectionChange = { selection ->
                             actions(MealPlannerAction.UpdateMealDoneStatus(meal.id, selection))
-                        })
+                        },
+                        onRenameMeal = { newName ->
+                            actions(MealPlannerAction.RenameMeal(meal.id, newName))
+                        },
+                        onDeleteMeal = {
+                            actions(MealPlannerAction.DeleteMeal(meal.id))
+                        }
+                    )
                 }
             }
         }

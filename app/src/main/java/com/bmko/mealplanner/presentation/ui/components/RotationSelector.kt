@@ -35,10 +35,11 @@ fun RotationSelector(
     val openAddRotationDialog = remember { mutableStateOf(false) }
 
     if (openAddRotationDialog.value) {
-        AddItemDialog(
+        TextInputDialog(
             title = "Add New Rotation",
             label = "Rotation Name",
-            onAdd = { rotationName ->
+            buttonLabel = "Add",
+            onConfirm = { rotationName ->
                 onNewRotationAdded(rotationName)
                 openAddRotationDialog.value = false
                 expanded = false

@@ -117,4 +117,28 @@ class MealPlannerApi @Inject constructor(private val tablesDB: TablesDB) {
             isMarkedDone = response.data["isMarkedDone"] as Boolean
         )
     }
+
+    suspend fun deleteMeal(mealId: String) {
+        tablesDB.deleteRow(
+            databaseId = databaseId,
+            tableId = mealsTableId,
+            rowId = mealId
+        )
+    }
+
+    suspend fun renameMeal(mealId: String, newName: String): MealDto {
+        val response = tablesDB.updateRow(
+            databaseId = databaseId,
+            tableId = mealsTableId,
+            rowId = mealId,
+            data = mapOf("name" to newName)
+        )
+
+        return MealDto(
+            id = response.id,
+            name = response.data["name"] as String,
+            imageId = response.data["imageId"] as String?,
+            isMarkedDone = response.data["isMarkedDone"] as Boolean
+        )
+    }
 }

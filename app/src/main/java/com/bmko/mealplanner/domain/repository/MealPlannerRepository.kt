@@ -12,4 +12,6 @@ interface MealPlannerRepository {
     suspend fun markMealDone(mealId: String, isDone: Boolean): Resource<Meal>
     suspend fun addRotation(rotationName: String): Resource<Rotation>
     suspend fun addMeal(rotationId: String, mealName: String): Resource<Meal>
+    suspend fun deleteMeal(mealId: String): Resource<Unit>
+    suspend fun renameMeal(mealId: String, newName: String): Resource<Meal>
 }
